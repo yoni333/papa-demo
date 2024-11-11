@@ -1,71 +1,166 @@
-import { IConditionInit } from "./interfaces";
+import { Condition } from "./conditions";
+import { ConditionContainer, IConditionInit } from "./interfaces";
+import { RuleEngine } from "./rule-engine";
 
-export const AGE_RULE :IConditionInit = {
+export const AGE_RULE: IConditionInit = {
     title: "בדיקת גיל מעל - 18",
     failMessage: "Age must be over 18.",
-    check:() => {
-        const age = 18
+    check: () => {
+        const age = 19
         return age > 18;
     }
 }
 
-export const AGE_RULE19 :IConditionInit = {
+export const AGE_RULE19: IConditionInit = {
     title: " - בדיקת גיל - מעל 21",
     failMessage: "Age must be over 21.",
-    check:() => {
+    check: () => {
         const age = 20
         return age > 21;
     }
 }
 
 export const EMPTY_RULE = {
-    title:"מולאו כל הפרטים",
-    failMessage:"Name cannot be empty.",
-    check:() => {
-        const name:string= "ro"
-      return name.trim() !== "";
+    title: "מולאו כל הפרטים",
+    failMessage: "Name cannot be empty.",
+    check: () => {
+        const name: string = ""
+        return name.trim() !== "";
     }
 }
 export const LOCATION_RULE = {
-    title:"מיקום מזכה - צפון",
-    failMessage:"לא גר בישוב מזכה.",
-    check:() => {
-        const name:string= "ro"
-      return name.trim() !== "";
+    title: "מיקום מזכה - צפון",
+    failMessage: "לא גר בישוב מזכה.",
+    check: () => {
+        const name: string = "ro"
+        return name.trim() !== "";
     }
 }
 export const ARMY_RULE30 = {
-    title:"מילואים - 20 ימים בחודש",
-    failMessage:"Name cannot be empty.",
-    check:() => {
-        const name:string= "ro"
-      return name.trim() !== "";
+    title: "מילואים - 20 ימים בחודש",
+    failMessage: "אין 20 ימי מילואים",
+    check: () => {
+        const days: number = 20
+        return days > 21;
     }
 }
 
 export const ARMY_RULE60 = {
-    title:"מילואים 30 ימים ב 60 יום",
-    failMessage:"Name cannot be empty.",
-    check:() => {
-        const name:string= "ro"
-      return name.trim() !== "";
+    title: "מילואים 30 ימים ב 60 יום",
+    failMessage: "Name cannot be empty.",
+    check: () => {
+        const name: string = "ro"
+        return name.trim() !== "";
     }
 }
 
 export const KIDS3_RULE = {
-    title:"ילדים - מעל 3",
-    failMessage:"Name cannot be empty.",
-    check:() => {
-        const name:string= "ro"
-      return name.trim() !== "";
+    title: "ילדים - מעל 3",
+    failMessage: "Name cannot be empty.",
+    check: () => {
+        const sum: number = 2
+        return sum > 3;
     }
 }
 
 export const KIDS6_RULE = {
-    title:"ילדים מעל 6",
-    failMessage:"Name cannot be empty.",
-    check:() => {
-        const name:string= "ro"
-      return name.trim() !== "";
+    title: "ילדים מעל 6",
+    failMessage:" ילדים מעל 6",
+    check: () => {
+        const sum: number = 7
+        return sum > 6;
     }
+}
+
+export const SALARY_RULE = {
+    title: "משכורת עד 10 אלף",
+    failMessage: "משכורת עד 10 אלף .",
+    check: () => {
+        const sum: number = 9000
+        return sum < 10000;
+    }
+}
+
+export const KIDSBOX_SALARY_AND_3KIDS_RULE = {
+    title: "אוסף תנאי זכאות עד 3 ילדים",
+    failMessage:  "אוסף תנאי זכאות עד 3 ילדים",
+    check:<ConditionContainer> {
+            type: "all",
+            conditions: [  new Condition(
+                ARMY_RULE30
+            ),   new Condition(
+                SALARY_RULE
+            ),]
+        }
+    
+}
+
+export const KIDSBOX_SALARY_AND_MILUIM_OR_6KIDS_RULE = {
+    title: "אוסף תנאי זכאות ילדים",
+    failMessage:"אוסף תנאי זכאות ילדים - מעל 6 ילדים",
+    check:<ConditionContainer> {
+            type: "any",
+            conditions: [  new Condition(
+                KIDSBOX_SALARY_AND_3KIDS_RULE
+            ),   new Condition(
+                KIDS6_RULE
+            ),]
+        }
+    
+}
+
+
+
+
+
+
+
+export const conditions: Condition[] = [
+    new Condition(
+        AGE_RULE
+    ),
+    new Condition(
+        EMPTY_RULE
+    ),
+    new Condition(
+        LOCATION_RULE
+    ),
+    new Condition(
+        AGE_RULE19
+    ),
+    new Condition(
+        ARMY_RULE30
+    ),
+    new Condition(
+        ARMY_RULE60
+    ),
+    new Condition(
+        KIDS3_RULE
+    ),
+    new Condition(
+        KIDS6_RULE
+    ),
+    new Condition(
+        KIDSBOX_SALARY_AND_3KIDS_RULE
+    ),
+    new Condition(
+        KIDSBOX_SALARY_AND_MILUIM_OR_6KIDS_RULE
+    ),
+];
+
+const conditionContainers: ConditionContainer = {
+    type: "all",
+    conditions:  [new Condition(
+        KIDSBOX_SALARY_AND_MILUIM_OR_6KIDS_RULE
+    )],
+};
+
+const ruleEngine = new RuleEngine(conditionContainers);
+const evaluationResult = ruleEngine.evaluateAll();
+console.log(evaluationResult.messages);
+
+if (evaluationResult.success) {
+    console.log("All conditions passed!");
+} else {
+    console.log("Conditions failed:", evaluationResult.messages);
 }

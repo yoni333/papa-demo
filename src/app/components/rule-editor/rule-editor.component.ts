@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 import { RuleEngine } from '../../condition/rule-engine';
-import { Condition, conditions } from '../../condition/conditions';
+import { Condition } from '../../condition/conditions';
+import { conditions } from '../../condition/data';
+import { ConditionContainer } from '../../condition/interfaces';
 
 @Component({
   selector: 'app-rule-editor',
@@ -116,7 +118,12 @@ export class RuleEditorComponent {
   }
 
   evaluateRule() {
-    const ruleEngine = new RuleEngine(this.selectedConditions); // Adjust as per your logic
+    const conditionContainers :ConditionContainer = {
+      type: "any",
+      conditions: this.selectedConditions,
+    };
+  
+    const ruleEngine = new RuleEngine(conditionContainers); // Adjust as per your logic
     this.evaluationResult = ruleEngine.evaluateAll();
   }
 }
