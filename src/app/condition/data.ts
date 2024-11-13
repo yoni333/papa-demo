@@ -5,8 +5,16 @@ import { RuleEngine } from "./rule-engine";
 export const AGE_RULE: IConditionInit = {
     title: "בדיקת גיל מעל - 18",
     failMessage: "Age must be over 18.",
+    getData():Promise<any>{
+        const p = new Promise(resolve=>{
+            resolve( 17)
+        })
+        return p
+    }
     check: () => {
-        const age = 17
+       this.getData().then((age)=>{
+            return age > 18;
+        })
         return age > 18;
     }
 }

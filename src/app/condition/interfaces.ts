@@ -5,7 +5,7 @@ export type ConditionResult ={ success: boolean; currentFailMessage: string , fa
 export type EvaluationResult = { success: boolean; currentFailMessages: string[] ,failMessagesBuffer:string[] }
 
 export interface IConditionInit {
-  title: string, failMessage: string, check: ConditionCheck | ConditionContainer
+  title: string, failMessage: string, check: ConditionCheck | ConditionContainer ,getData:()=>Promise<any> 
 }
 export interface ICondition {
    

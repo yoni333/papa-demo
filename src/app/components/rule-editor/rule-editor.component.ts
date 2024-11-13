@@ -4,6 +4,7 @@ import { RuleEngine } from '../../condition/rule-engine';
 import { Condition } from '../../condition/conditions';
 import { conditions } from '../../condition/data';
 import { ConditionContainer, EvaluationResult } from '../../condition/interfaces';
+import { FormControl, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-rule-editor',
@@ -25,7 +26,14 @@ import { ConditionContainer, EvaluationResult } from '../../condition/interfaces
           </div>
         </div>
         <div class="column">
-          <h3>Selected Rule</h3>
+        <mat-form-field appearance="fill" class="rule-select">
+            <mat-label>Select Rule Type</mat-label>
+            <mat-select [(value)]="selectedRule" (selectionChange)="onRuleSelect($event)">
+              <mat-option *ngFor="let rule of rulesList" [value]="rule">{{ rule.ruleName }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <br>
+          <h3>Selected Rule {{currentRuleName}}</h3>
           <div
             cdkDropList
             [cdkDropListData]="selectedConditions"
@@ -36,7 +44,14 @@ import { ConditionContainer, EvaluationResult } from '../../condition/interfaces
               {{ condition.title }}
             </div>
           </div>
+          <hr>
+          <mat-form-field appearance="fill">
+            <mat-label>Enter rule name</mat-label>
+            <input matInput [formControl]="ruleNameControl" placeholder="Rule Name" />
+          </mat-form-field>
+          <button (click)="addRule()">Add Rule</button>
         </div>
+        
       </div>
       <button (click)="evaluateRule()">Evaluate Rule</button>
       <div *ngIf="evaluationResult" class="result">
@@ -101,10 +116,13 @@ import { ConditionContainer, EvaluationResult } from '../../condition/interfaces
   `]
 })
 export class RuleEditorComponent {
+  ruleNameControl = new FormControl<string>('',Validators.required);
   availableConditions: Condition[] = conditions;
-
+  currentRuleName:string =  "לא הנבחר חק";
   selectedConditions: Condition[] = [];
-  evaluationResult:EvaluationResult | null = null;
+  evaluationResult: EvaluationResult | null = null;
+  rulesList: { ruleName: string; conditionContainer: ConditionContainer }[] = [];
+  selectedRule:{ ruleName: string; conditionContainer: ConditionContainer }= { ruleName: "לא הנבחר חק", conditionContainer: {conditions:[],type:'all'} };
 
   handleDrop(event: CdkDragDrop<Condition[]>) {
     if (event.previousContainer !== event.container) {
@@ -118,12 +136,29 @@ export class RuleEditorComponent {
   }
 
   evaluateRule() {
-    const conditionContainers :ConditionContainer = {
+    const conditionContainers: ConditionContainer = {
       type: "any",
       conditions: this.selectedConditions,
     };
-  
+
     const ruleEngine = new RuleEngine(conditionContainers); // Adjust as per your logic
     this.evaluationResult = ruleEngine.evaluateAll();
+  }
+  addRule() {
+    if (!this.ruleNameControl.valid){return}
+    const conditionContainer: ConditionContainer = {
+      type: "any",
+      conditions: this.selectedConditions,
+    };
+    const rule = {
+      ruleName:this.ruleNameControl.value as string,
+      conditionContainer
+      
+    }
+    this.rulesList.push(rule)
+  }
+  onRuleSelect(event: any) {
+    this.selectedConditions = event.value.conditionContainer.conditions;
+    this.currentRuleName = event.value.ruleName;
   }
 }

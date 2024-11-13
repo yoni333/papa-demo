@@ -8,11 +8,13 @@ import { AppComponent } from './app.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
+import { MatSelectModule ,MatOption} from '@angular/material/select';
+
 import { ConditionsListComponent } from './components/conditions-list/conditions-list.component';
 import { RuleEditorComponent } from './components/rule-editor/rule-editor.component';
 import { RuleZoneComponent } from './components/rule-zone/rule-zone.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-
+import { ReactiveFormsModule, FormControl } from '@angular/forms';
 @NgModule({
   declarations: [
     AppComponent,
@@ -26,7 +28,10 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     MatButtonModule,
     MatInputModule,
     MatCardModule,
-    DragDropModule,  
+    MatSelectModule ,
+    MatOption,
+    DragDropModule, 
+    ReactiveFormsModule 
   ],
   bootstrap: [AppComponent],
  
