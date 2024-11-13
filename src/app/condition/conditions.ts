@@ -15,21 +15,24 @@ export class Condition {
     this.check = check;
   }
 
-  evaluate(): ConditionResult {
+  evaluate(failMessagesBuffer:string[]): ConditionResult {
     let result: boolean = false;
     if (typeof this.check === 'function') {
 
       result = this.check();
+     
     }
 
     if (typeof this.check === 'object') {
       const ruleEngine = new RuleEngine(this.check);
-      const evaluationResult = ruleEngine.evaluateAll();
+      const evaluationResult = ruleEngine.evaluateAll(failMessagesBuffer);
+     
       result =evaluationResult.success;
     }
+   
     return result
-      ? { success: true, message: "success" }
-      : { success: false, message: this.failMessage };
+      ? { success: true, currentFailMessage: "success" ,failMessagesBuffer}
+      : { success: false, currentFailMessage: this.failMessage ,failMessagesBuffer};
     }
 }
 

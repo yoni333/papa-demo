@@ -3,7 +3,7 @@ import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 import { RuleEngine } from '../../condition/rule-engine';
 import { Condition } from '../../condition/conditions';
 import { conditions } from '../../condition/data';
-import { ConditionContainer } from '../../condition/interfaces';
+import { ConditionContainer, EvaluationResult } from '../../condition/interfaces';
 
 @Component({
   selector: 'app-rule-editor',
@@ -42,7 +42,7 @@ import { ConditionContainer } from '../../condition/interfaces';
       <div *ngIf="evaluationResult" class="result">
         <p *ngIf="evaluationResult.success" class="success">All conditions passed!</p>
         <ul *ngIf="!evaluationResult.success">
-          <li *ngFor="let msg of evaluationResult.messages" class="error">{{ msg }}</li>
+          <li *ngFor="let msg of evaluationResult.currentFailMessages" class="error">{{ msg }}</li>
         </ul>
       </div>
     </div>
@@ -104,7 +104,7 @@ export class RuleEditorComponent {
   availableConditions: Condition[] = conditions;
 
   selectedConditions: Condition[] = [];
-  evaluationResult: { success: boolean; messages: string[] } | null = null;
+  evaluationResult:EvaluationResult | null = null;
 
   handleDrop(event: CdkDragDrop<Condition[]>) {
     if (event.previousContainer !== event.container) {

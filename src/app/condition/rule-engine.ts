@@ -1,5 +1,5 @@
 import { Condition } from "./conditions";
-import { ConditionContainer } from "./interfaces";
+import { ConditionContainer, EvaluationResult } from "./interfaces";
 
 export class RuleEngine {
  private conditions: Condition[];
@@ -9,34 +9,41 @@ export class RuleEngine {
     this.conditions = conditionContainers.conditions;
   }
 
-  evaluateAll(): { success: boolean; messages: string[] } {
-    let messages: string[] = [];
+  evaluateAll(failMessagesBuffer:string[]=[]): EvaluationResult {
+     let currentFailMessages: string[] = [];
+    
     let  success = false
-     messages =  this.runConditions(this.conditions);
-
+    const res =  this.runConditions(this.conditions,failMessagesBuffer);
+    failMessagesBuffer.push(...res.currentFailMessages)
+    currentFailMessages = res.currentFailMessages
     if ( this.conditionContainers.type === "all" ) {
-      success =  messages.length === 0 ? true :false
+      success =  currentFailMessages.length === 0 ? true :false
     }else{
       
-      success = (this.conditions.length - messages.length) === 0 ? false :true;
+      success = (this.conditions.length - currentFailMessages.length) === 0 ? false :true;
 
     }
     
     return {
       success,
-      messages,
+       currentFailMessages,
+      failMessagesBuffer
     };
   }
 
-  runConditions(conditions:Condition[]):string[]{
-    const messages: string[] = [];
+  runConditions(conditions:Condition[], failMessagesBuffer:string[] ):{currentFailMessages:string[],failMessagesBuffer:string[]}{
+    const currentFailMessages: string[] = [];
+   
     for (const condition of conditions) {
-      const result = condition.evaluate();
+      const result = condition.evaluate(failMessagesBuffer);
       if (!result.success) {
-        messages.push(result.message);
+       
+        currentFailMessages.push(result.currentFailMessage);
       }
     }
 
-    return messages;
+   
+
+    return {currentFailMessages,failMessagesBuffer };
   }
 }
