@@ -1,98 +1,99 @@
 import { Condition } from "./conditions";
 import { ConditionContainer, IConditionInit } from "./interfaces";
 import { RuleEngine } from "./rule-engine";
-
-export const AGE_RULE: IConditionInit = {
+const mockData= {age:19,name:"ron",placeNorth:{city:"aco",list:["aco","haifa","nahariya"]},formValid:true,miluim:30,kids:5,salary:9000}
+export const AGE_RULE: IConditionInit<number> = {
     title: "בדיקת גיל מעל - 18",
     failMessage: "Age must be over 18.",
-    getData():Promise<any>{
-        const p = new Promise(resolve=>{
-            resolve( 17)
-        })
-        return p
-    }
-    check: () => {
-       this.getData().then((age)=>{
-            return age > 18;
-        })
-        return age > 18;
+    data:mockData.age,
+    check:function() {
+       
+        return this.data > 18;
     }
 }
 
-export const AGE_RULE19: IConditionInit = {
+export const AGE_RULE21: IConditionInit<number>  = {
     title: " - בדיקת גיל - מעל 21",
     failMessage: "Age must be over 21.",
-    check: () => {
-        const age = 22
-        return age > 21;
+    data:mockData.age,
+    check:function() {
+       
+        return this.data > 21;
     }
 }
 
-export const EMPTY_RULE = {
+export const EMPTY_RULE: IConditionInit<boolean> = {
     title: "מולאו כל הפרטים",
     failMessage: "Name cannot be empty.",
-    check: () => {
-        const name: string = ""
-        return name.trim() !== "";
+    data:mockData.formValid,
+    check:function() {
+        return this.data;
     }
 }
-export const LOCATION_RULE = {
+export const LOCATION_RULE : IConditionInit<{city:string,list:string[]}>= {
     title: "מיקום מזכה - צפון",
     failMessage: "לא גר בישוב מזכה.",
-    check: () => {
-        const name: string = "ro"
-        return name.trim() !== "";
+    data:mockData.placeNorth,
+    check:function() {
+       
+        return this.data.list.find(c=>c===this.data.city)? true :false;
     }
 }
-export const ARMY_RULE30 = {
+export const ARMY_RULE30 : IConditionInit<number>= {
     title: "מילואים - 20 ימים בחודש",
     failMessage: "אין 20 ימי מילואים",
-    check: () => {
-        const days: number = 20
-        return days > 21;
+    data:mockData.miluim,
+    check:function() {
+       
+        return this.data > 20;
     }
 }
 
-export const ARMY_RULE60 = {
+export const ARMY_RULE60: IConditionInit<number> = {
     title: "מילואים 30 ימים ב 60 יום",
     failMessage: "Name cannot be empty.",
-    check: () => {
-        const name: string = "ro"
-        return name.trim() !== "";
+    data:mockData.miluim,
+    check:function() {
+       
+        return this.data > 30;
     }
 }
 
-export const KIDS3_RULE = {
+export const KIDS3_RULE: IConditionInit<number> = {
     title: "ילדים - מעל 3",
     failMessage: "אין ילדים מעל גיל 3",
-    check: () => {
-        const sum: number = 2
-        return sum > 3;
+    data:mockData.kids,
+    check:function() {
+       
+        return this.data > 3;
     }
 }
 
-export const KIDS6_RULE = {
+export const KIDS6_RULE: IConditionInit<number> = {
     title: "ילדים מעל 6",
     failMessage: " ילדים מעל 6",
-    check: () => {
-        const sum: number =7
-        return sum > 6;
+    data:mockData.kids,
+    check:function() {
+       
+        return this.data > 6;
     }
 }
 
-export const SALARY_RULE = {
+export const SALARY_RULE: IConditionInit<number> = {
     title: "משכורת עד 10 אלף",
     failMessage: "משכורת עד 10 אלף .",
-    check: () => {
-        const sum: number = 19000
-        return sum < 10000;
+    data:mockData.salary,
+    check:function() {
+       
+        return this.data < 10000;
     }
 }
 
-export const KIDSBOX_SALARY_AND_3KIDS_RULE = {
+export const KIDSBOX_SALARY_AND_3KIDS_RULE: IConditionInit<number> = {
     title: "אוסף תנאי זכאות עד 3 ילדים",
     failMessage: "אוסף תנאי זכאות עד 3 ילדים לא מתקיים",
-    check: <ConditionContainer>{
+    data:0,
+    check: <ConditionContainer<number>>{
         type: "all",
         conditions: [new Condition(
             ARMY_RULE30
@@ -106,7 +107,7 @@ export const KIDSBOX_SALARY_AND_3KIDS_RULE = {
 export const KIDSBOX_SALARY_AND_MILUIM_OR_6KIDS_RULE = {
     title: "אוסף תנאי זכאות ילדים",
     failMessage: "אוסף תנאי זכאות ילדים - מעל 6 ילדים",
-    check: <ConditionContainer>{
+    check: <ConditionContainer<number>>{
         type: "all",
         conditions: [new Condition(
             KIDSBOX_SALARY_AND_3KIDS_RULE
@@ -122,7 +123,7 @@ export const KIDSBOX_SALARY_AND_MILUIM_OR_6KIDS_RULE = {
 
 
 
-export const conditions: Condition[] = [
+export const conditions: Condition<number>[] = [
     new Condition(
         AGE_RULE
     ),
@@ -133,7 +134,7 @@ export const conditions: Condition[] = [
         LOCATION_RULE
     ),
     new Condition(
-        AGE_RULE19
+        AGE_RULE21
     ),
     new Condition(
         ARMY_RULE30
@@ -192,7 +193,7 @@ const conditionContainersSimple: ConditionContainer = {
     conditions: [new Condition(
         AGE_RULE
     ),new Condition(
-        AGE_RULE19
+        AGE_RULE21
     )
     ,new Condition(
         EMPTY_RULE

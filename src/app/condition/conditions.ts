@@ -4,22 +4,23 @@ import { RuleEngine } from "./rule-engine";
 console.log("start")
 
 
-export class Condition {
+export class Condition <T>{
   title: string;
   failMessage: string;
-  check: ConditionCheck | ConditionContainer;
-
-  constructor({ title, failMessage, check }: IConditionInit) {
+  check: ConditionCheck | ConditionContainer<T>;
+  data:T
+  constructor({ title, failMessage, check,data }: IConditionInit<T>) {
     this.title = title;
     this.failMessage = failMessage;
     this.check = check;
+    this.data = data
   }
 
   evaluate(failMessagesBuffer:string[]): ConditionResult {
     let result: boolean = false;
     if (typeof this.check === 'function') {
 
-      result = this.check();
+      result = this.check(this.data);
      
     }
 
